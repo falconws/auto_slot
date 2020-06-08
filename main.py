@@ -2,6 +2,8 @@ import sys
 import time
 import pyautogui
 
+from datetime import datetime
+
 
 class AutoSlot:
     """Need change Minecraft setting below
@@ -18,22 +20,21 @@ class AutoSlot:
         check_server_count = 1800 / seconds_of_charge_coin
         count = 0
         while True:
-            print('Spinning...')
+            print(f'{datetime.now().strftime("%m/%d %H:%M:%S")} Spinning...')
             pyautogui.mouseDown(button='right')
             time.sleep(seconds_of_charge_coin)  # wait spinning ...
-            # time.sleep(120)  # wait spinning ...
             pyautogui.mouseUp(button='right')
             pyautogui.press('t')  # open command bar
             pyautogui.press('backspace')  # remove t
             command = '/coin buy 32'
-            # command = '/coin buy 64'
             pyautogui.write(command, interval=0.01)
             pyautogui.press('enter')
-            print(command)
+            print(f'{datetime.now().strftime("%m/%d %H:%M:%S")} {command}')
             if not check_server:
                 continue
 
             count += 1
+            print(f'{datetime.now().strftime("%m/%d %H:%M:%S")} check count: {count}/{check_server_count}')
             if count >= check_server_count:
                 position_of_return_server_list = self.is_server_closed()
                 if position_of_return_server_list:
@@ -41,28 +42,28 @@ class AutoSlot:
                 count = 0
 
     def is_server_closed(self):
-        print('Is server closed?')
+        print(f'{datetime.now().strftime("%m/%d %H:%M:%S")} Is server closed?')
         # https://github.com/asweigart/pyautogui/issues/441
         return pyautogui.locateCenterOnScreen(self.return_server_list)
 
     def reconnect_server(self, position_of_return_server_list):
-        print('Try reconnect server.')
+        print(f'{datetime.now().strftime("%m/%d %H:%M:%S")} Try reconnect server.')
         pyautogui.click(position_of_return_server_list, button='left')
-        for i in range(50):
+        for i in range(1, 51):
             position_of_toraden_icon = pyautogui.locateCenterOnScreen(self.toraden_icon)
             pyautogui.click(position_of_toraden_icon, button='left')
             time.sleep(15)
             position_of_reconnect_fail_return_server_list = self.is_server_closed()
             if position_of_reconnect_fail_return_server_list:
-                print(f'Reconnect failed. try count: {i + 1}')
+                print(f'{datetime.now().strftime("%m/%d %H:%M:%S")} Reconnect failed. try count: {i}')
                 pyautogui.click(position_of_reconnect_fail_return_server_list, button='left')
             else:
                 # Success reconnect server
-                print('Success reconnect server.')
+                print(f'{datetime.now().strftime("%m/%d %H:%M:%S")} Success reconnect server.')
                 return
 
         # Server is down, exit program.
-        print('Server is down.')
+        print(f'{datetime.now().strftime("%m/%d %H:%M:%S")} Server is down.')
         sys.exit(0)
 
 
