@@ -12,34 +12,37 @@ class AutoSlot:
         self.toraden_icon = 'resource/toraden_icon.png'
         self.return_server_list = 'resource/return_server_list.png'
 
-    def spin(self, check_server=False):
+    def spin(self):
         seconds_of_charge_coin = 40
 
         # 30 minutes = 1800 seconds
         # check_server_count is 45
-        check_server_count = 1800 / seconds_of_charge_coin
+        check_server_count = int(1800 / seconds_of_charge_coin)
         count = 0
         while True:
             print(f'{datetime.now().strftime("%m/%d %H:%M:%S")} Spinning...')
             pyautogui.mouseDown(button='right')
             time.sleep(seconds_of_charge_coin)  # wait spinning ...
-            pyautogui.mouseUp(button='right')
-            pyautogui.press('t')  # open command bar
-            pyautogui.press('backspace')  # remove t
-            command = '/coin buy 32'
-            pyautogui.write(command, interval=0.01)
-            pyautogui.press('enter')
-            print(f'{datetime.now().strftime("%m/%d %H:%M:%S")} {command}')
-            if not check_server:
-                continue
-
             count += 1
             print(f'{datetime.now().strftime("%m/%d %H:%M:%S")} check count: {count}/{check_server_count}')
             if count >= check_server_count:
+                count = 0
                 position_of_return_server_list = self.is_server_closed()
                 if position_of_return_server_list:
+                    pyautogui.mouseUp(button='right')
                     self.reconnect_server(position_of_return_server_list)
-                count = 0
+
+            pyautogui.mouseUp(button='right')
+            self.buy_coin(32)
+
+    @staticmethod
+    def buy_coin(number):
+        pyautogui.press('t')  # open command bar
+        pyautogui.press('backspace')  # remove t
+        command = f'/coin buy {number}'
+        pyautogui.write(command, interval=0.01)
+        pyautogui.press('enter')
+        print(f'{datetime.now().strftime("%m/%d %H:%M:%S")} {command}')
 
     def is_server_closed(self):
         print(f'{datetime.now().strftime("%m/%d %H:%M:%S")} Is server closed?')
@@ -69,5 +72,5 @@ class AutoSlot:
 
 if __name__ == '__main__':
     time.sleep(5)
-    # AutoSlot().spin()
-    AutoSlot().spin(True)  # check server closed
+    AutoSlot().spin()
+
